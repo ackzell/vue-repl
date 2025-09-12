@@ -36,6 +36,7 @@ export function useStore(
       newSFC: newSFCCode,
     }),
     builtinImportMap = undefined!, // set later
+    editor = ref(),
 
     errors = ref([]),
     showOutput = ref(false),
@@ -363,6 +364,7 @@ export function useStore(
     mainFile,
     template,
     builtinImportMap,
+    editor,
 
     errors,
     showOutput,
@@ -424,6 +426,7 @@ export type StoreState = ToRefs<{
     newSFC?: string
   }
   builtinImportMap: ImportMap
+  editor?: editor.IStandaloneCodeEditor
 
   // output
   errors: (string | Error)[]
@@ -493,6 +496,7 @@ export type Store = Pick<
   | 'renameFile'
   | 'getImportMap'
   | 'getTsConfig'
+  | 'editor'
 >
 
 export class File {
