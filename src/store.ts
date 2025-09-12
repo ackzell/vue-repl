@@ -37,7 +37,7 @@ export function useStore(
       newSFC: newSFCCode,
     }),
     builtinImportMap = undefined!, // set later
-    editor = ref(),
+    editor = shallowRef(),
 
     errors = ref([]),
     showOutput = ref(false),

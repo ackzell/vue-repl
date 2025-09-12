@@ -1,5 +1,5 @@
 {
-  "name": "@vue/repl",
+  "name": "@calmecac-vue/repl",
   "version": "4.7.0",
   "description": "Vue component for editing Vue components",
   "packageManager": "pnpm@10.14.0",
