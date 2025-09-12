@@ -36,7 +36,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<(e: 'change', value: string) => void>()
 
 const el = useTemplateRef('container')
-const { autoResize, autoSave } = inject(injectKeyProps)!
+const { autoResize, autoSave, store } = inject(injectKeyProps)!
 let editor: CodeMirror.Editor
 
 const emitChangeEvent = () => {
@@ -63,6 +63,9 @@ onMounted(() => {
     lineNumbers: true,
     ...addonOptions,
   })
+
+  // Set the editor in the store so it can be accessed by dependent projects
+  store.value.editor = editor
 
   watchEffect(() => {
     const cur = editor.getValue()

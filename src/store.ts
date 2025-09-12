@@ -17,6 +17,7 @@ import type {
   SFCTemplateCompileOptions,
 } from 'vue/compiler-sfc'
 import type { OutputModes } from './types'
+import type CodeMirror from 'codemirror'
 import type { editor } from 'monaco-editor-core'
 import { type ImportMap, mergeImportMap, useVueImportMap } from './import-map'
 
@@ -426,7 +427,7 @@ export type StoreState = ToRefs<{
     newSFC?: string
   }
   builtinImportMap: ImportMap
-  editor?: editor.IStandaloneCodeEditor
+  editor?: editor.IStandaloneCodeEditor | CodeMirror.Editor
 
   // output
   errors: (string | Error)[]
