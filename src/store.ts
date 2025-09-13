@@ -1,4 +1,5 @@
 import {
+  type ShallowRef,
   type ToRefs,
   type UnwrapRef,
   computed,
@@ -24,10 +25,12 @@ import { type ImportMap, mergeImportMap, useVueImportMap } from './import-map'
 import welcomeSFCCode from './template/welcome.vue?raw'
 import newSFCCode from './template/new-sfc.vue?raw'
 
+export type Editor = editor.IStandaloneCodeEditor | CodeMirror.Editor
+
 export const importMapFile = 'import-map.json'
 export const tsconfigFile = 'tsconfig.json'
 
-export function useStore(
+export function useStore<E extends Editor = Editor>(
   {
     files = ref(Object.create(null)),
     activeFilename = undefined!, // set later
@@ -37,7 +40,7 @@ export function useStore(
       newSFC: newSFCCode,
     }),
     builtinImportMap = undefined!, // set later
-    editor = shallowRef(),
+    editor = shallowRef<E | undefined>(),
 
     errors = ref([]),
     showOutput = ref(false),
@@ -50,9 +53,9 @@ export function useStore(
     typescriptVersion = ref('latest'),
     dependencyVersion = ref(Object.create(null)),
     reloadLanguageTools = ref(),
-  }: Partial<StoreState> = {},
+  }: Partial<StoreState<E>> = {},
   serializedState?: string,
-): ReplStore {
+): ReplStore<E> {
   if (!builtinImportMap) {
     ;({ importMap: builtinImportMap, vueVersion } = useVueImportMap({
       vueVersion: vueVersion.value,
@@ -358,7 +361,7 @@ export function useStore(
 
   applyBuiltinImportMap()
 
-  const store: ReplStore = reactive({
+  const store: ReplStore<E> = reactive({
     files,
     activeFile,
     activeFilename,
@@ -418,40 +421,41 @@ export interface SFCOptions {
   template?: Partial<SFCTemplateCompileOptions>
 }
 
-export type StoreState = ToRefs<{
-  files: Record<string, File>
-  activeFilename: string
-  mainFile: string
-  template: {
-    welcomeSFC?: string
-    newSFC?: string
+export type StoreState<E extends Editor = Editor> = ToRefs<
+  {
+    files: Record<string, File>
+    activeFilename: string
+    mainFile: string
+    template: {
+      welcomeSFC?: string
+      newSFC?: string
+    }
+    builtinImportMap: ImportMap
+
+    // output
+    errors: (string | Error)[]
+    showOutput: boolean
+    outputMode: OutputModes
+    sfcOptions: SFCOptions
+    ssrOutput: {
+      html: string
+      context: unknown
+    }
+    /** `@vue/compiler-sfc` */
+    compiler: typeof defaultCompiler
+    /* only apply for compiler-sfc */
+    vueVersion: string | null
+
+    // volar-related
+    locale: string | undefined
+    typescriptVersion: string
+    /** \{ dependencyName: version \} */
+    dependencyVersion: Record<string, string>
+    reloadLanguageTools?: (() => void) | undefined
   }
-  builtinImportMap: ImportMap
-  editor?: editor.IStandaloneCodeEditor | CodeMirror.Editor
+> & { editor: ShallowRef<E | undefined> }
 
-  // output
-  errors: (string | Error)[]
-  showOutput: boolean
-  outputMode: OutputModes
-  sfcOptions: SFCOptions
-  ssrOutput: {
-    html: string
-    context: unknown
-  }
-  /** `@vue/compiler-sfc` */
-  compiler: typeof defaultCompiler
-  /* only apply for compiler-sfc */
-  vueVersion: string | null
-
-  // volar-related
-  locale: string | undefined
-  typescriptVersion: string
-  /** \{ dependencyName: version \} */
-  dependencyVersion: Record<string, string>
-  reloadLanguageTools?: (() => void) | undefined
-}>
-
-export interface ReplStore extends UnwrapRef<StoreState> {
+export interface ReplStore<E extends Editor = Editor> extends UnwrapRef<StoreState<E>> {
   activeFile: File
   /** Loading compiler */
   loading: boolean
@@ -474,8 +478,8 @@ export interface ReplStore extends UnwrapRef<StoreState> {
   setFiles(newFiles: Record<string, string>, mainFile?: string): Promise<void>
 }
 
-export type Store = Pick<
-  ReplStore,
+export type Store<E extends Editor = Editor> = Pick<
+  ReplStore<E>,
   | 'files'
   | 'activeFile'
   | 'mainFile'
