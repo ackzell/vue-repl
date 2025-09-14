@@ -318,6 +318,7 @@ export function useStore<E extends Editor = Editor>(
   const setFiles: ReplStore['setFiles'] = async (
     newFiles,
     mainFile = store.mainFile,
+    autoSetActive = true,
   ) => {
     const files: Record<string, File> = Object.create(null)
 
@@ -338,7 +339,9 @@ export function useStore<E extends Editor = Editor>(
     store.files = files
     store.errors = errors
     applyBuiltinImportMap()
-    setActive(store.mainFile)
+    if (autoSetActive) {
+      setActive(store.mainFile)
+    }
   }
   const setDefaultFile = (): void => {
     setFile(
@@ -475,7 +478,15 @@ export interface ReplStore<E extends Editor = Editor> extends UnwrapRef<StoreSta
    */
   deserialize(serializedState: string, checkBuiltinImportMap?: boolean): void
   getFiles(): Record<string, string>
-  setFiles(newFiles: Record<string, string>, mainFile?: string): Promise<void>
+  /**
+   *
+   * @param newFiles
+   * @param mainFile
+   * @param autoSetActive Whether to set the main file
+     automatically as active after updating the files in the store
+     @default true
+   */
+  setFiles(newFiles: Record<string, string>, mainFile?: string, autoSetActive?: boolean): Promise<void>
 }
 
 export type Store<E extends Editor = Editor> = Pick<
