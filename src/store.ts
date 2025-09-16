@@ -360,7 +360,7 @@ export function useStore<E extends Editor = Editor>(
     mainFile.value = Object.keys(files.value)[0]
   }
   activeFilename ||= ref(mainFile.value)
-  const activeFile = computed(() => files.value[activeFilename.value])
+  const activeFile = computed(() => files.value[activeFilename.value] || new File('noneExistent', '', true))
 
   applyBuiltinImportMap()
 
