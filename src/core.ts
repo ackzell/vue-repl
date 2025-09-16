@@ -5,6 +5,7 @@ export {
   type StoreState,
   type Store,
   type ReplStore,
+  type BatchUpdateOperation,
 } from './store'
 export { useVueImportMap, mergeImportMap, type ImportMap } from './import-map'
 export { compileFile } from './transform'
