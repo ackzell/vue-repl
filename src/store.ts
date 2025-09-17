@@ -433,6 +433,67 @@ export function useStore<E extends Editor = Editor>(
     }
   }
 
+const applyFullState: ReplStore['applyFullState'] = async (fileState, activeFilenameHint) => {
+  // Temporarily disable compilation to avoid intermediate states
+  const filesToCompile: File[] = []
+
+  // Get current files
+  const currentFilenames = new Set(Object.keys(files.value))
+  const newFilenames = new Set(Object.keys(fileState))
+
+  // 1. Delete files that are not in the fileState
+  for (const filename of currentFilenames) {
+    if (!newFilenames.has(filename)) {
+      delete files.value[filename]
+    }
+  }
+
+  // 2. Update or create files from fileState
+  for (const [filename, code] of Object.entries(fileState)) {
+    // Ensure code is a string
+    const codeStr = String(code)
+    let file = files.value[filename]
+    if (file) {
+      // Update existing file
+      if (file.code !== codeStr) {
+        file.updateContent(codeStr)
+        filesToCompile.push(file)
+      }
+    } else {
+      // Create new file
+      file = new File(filename, codeStr)
+      files.value[filename] = file
+      filesToCompile.push(file)
+    }
+  }
+
+  // 3. Set active file
+  const targetActive = activeFilenameHint || activeFilename.value
+  if (files.value[targetActive]) {
+    activeFilename.value = targetActive
+  } else if (files.value[mainFile.value]) {
+    activeFilename.value = mainFile.value
+  } else {
+    // Fallback to first available file
+    const firstFile = Object.keys(files.value)[0]
+    if (firstFile) {
+      activeFilename.value = firstFile
+    }
+  }
+
+  // 4. Compile all affected files
+  const compilePromises = filesToCompile.map(file => compileFile(store, file))
+  const results = await Promise.all(compilePromises)
+
+  // 5. Update errors for active file
+  const activeFileIndex = filesToCompile.findIndex(file => file.filename === activeFilename.value)
+  if (activeFileIndex !== -1) {
+    errors.value = results[activeFileIndex]
+  } else {
+    errors.value = []
+  }
+}
+
   // Original methods
   const getImportMap: Store['getImportMap'] = () => {
     try {
@@ -617,6 +678,7 @@ export function useStore<E extends Editor = Editor>(
     getFileLastModified,
     hasFile,
     batchUpdate,
+    applyFullState
   })
 
   return store
@@ -714,6 +776,7 @@ export interface ReplStore<E extends Editor = Editor> extends UnwrapRef<StoreSta
   getFileLastModified(filename: string): number
   hasFile(filename: string): boolean
   batchUpdate(updates: BatchUpdateOperation[]): Promise<void>
+  applyFullState(fileState: Record<string, string>, activeFilenameHint?: string): Promise<void>
 }
 
 export type Store<E extends Editor = Editor> = Pick<
