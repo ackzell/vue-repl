@@ -80,10 +80,7 @@ onMounted(() => {
     ...editorOptions.value.monacoOptions,
   })
   editor.value = editorInstance
-  // Set the editor in the store so it can be accessed by dependent projects
-  store.value.editor = editorInstance
 
-  // ALSO register with the new editor composable for clean access
   setEditor(editorInstance)
 
   // Support for semantic highlighting

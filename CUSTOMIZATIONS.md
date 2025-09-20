@@ -28,11 +28,10 @@ This document tracks the customizations made to the official @vue/repl for yehye
 - **src/editor-composable.ts**: New composable for clean editor access patterns
 
 ### Editor Access Patterns
-- **Legacy pattern**: Access via `store.editor` (maintained for backward compatibility)
-- **New composable pattern**: Use `useReplEditor()` for cleaner separation of concerns
+- **New composable pattern**: Use `useReplEditor()` for clean separation of concerns
   - `getEditor()`: Get current editor instance
-  - `setEditor(editor)`: Register editor instance
-  - `clearEditor()`: Clear editor reference
+  - `setEditor(editor)`: Register editor instance (internal use)
+  - `clearEditor()`: Clear editor reference (internal use)
   - `hasEditor()`: Check if editor is available
   - `withEditor(callback)`: Execute callback with editor if available
   - `editorRef`: Reactive readonly reference for watchers
@@ -54,15 +53,11 @@ This document tracks the customizations made to the official @vue/repl for yehye
 
 ## API Migration Guide
 
-### Editor Access Migration
+### Editor Access
 
-For clean separation of concerns, prefer the new composable pattern over direct store access:
+The Vue REPL now uses a clean composable pattern for editor access:
 
 ```typescript
-// ❌ Legacy (still supported)
-import { store } from '@calmecac-vue/repl'
-const editor = store.editor
-
 // ✅ New recommended pattern
 import { useReplEditor } from '@calmecac-vue/repl'
 const { getEditor, withEditor, hasEditor } = useReplEditor()

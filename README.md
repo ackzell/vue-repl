@@ -1,10 +1,26 @@
-# @vue/repl
+# @calmecac-vue/repl
 
-Vue SFC REPL as a Vue 3 component.
+Vue SFC REPL as a Vue 3 component with enhanced editor access patterns.
+
+## Editor Access
+
+**New in this fork**: Clean editor access via `useReplEditor()` composable:
+
+```ts
+import { useReplEditor } from '@calmecac-vue/repl'
+
+const { getEditor, withEditor, hasEditor } = useReplEditor()
+
+// Safe editor access
+withEditor((editor) => {
+  // Work with Monaco editor instance
+  editor.getModel()?.setValue('new content')
+})
+```
 
 ## Basic Usage
 
-**Note: `@vue/repl` >= 2 now supports Monaco Editor, but also requires explicitly passing in the editor to be used for tree-shaking.**
+**Note: `@calmecac-vue/repl` >= 2 now supports Monaco Editor, but also requires explicitly passing in the editor to be used for tree-shaking.**
 
 ```ts
 // vite.config.ts
@@ -23,9 +39,9 @@ Basic editing experience with no intellisense. Lighter weight, fewer network req
 
 ```vue
 <script setup>
-import { Repl } from '@vue/repl'
-import CodeMirror from '@vue/repl/codemirror-editor'
-// import '@vue/repl/style.css'
+import { Repl } from '@calmecac-vue/repl'
+import CodeMirror from '@calmecac-vue/repl/codemirror-editor'
+// import '@calmecac-vue/repl/style.css'
 // ^ no longer needed after 3.0
 </script>
 

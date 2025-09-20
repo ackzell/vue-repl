@@ -1,5 +1,6 @@
+import type CodeMirror from 'codemirror'
+import type { editor } from 'monaco-editor-core'
 import {
-  type ShallowRef,
   type ToRefs,
   type UnwrapRef,
   computed,
@@ -9,21 +10,19 @@ import {
   watch,
   watchEffect,
 } from 'vue'
-import * as defaultCompiler from 'vue/compiler-sfc'
-import { compileFile } from './transform'
-import { atou, utoa } from './utils'
 import type {
   SFCAsyncStyleCompileOptions,
   SFCScriptCompileOptions,
   SFCTemplateCompileOptions,
 } from 'vue/compiler-sfc'
-import type { OutputModes } from './types'
-import type CodeMirror from 'codemirror'
-import type { editor } from 'monaco-editor-core'
+import * as defaultCompiler from 'vue/compiler-sfc'
 import { type ImportMap, mergeImportMap, useVueImportMap } from './import-map'
+import { compileFile } from './transform'
+import type { OutputModes } from './types'
+import { atou, utoa } from './utils'
 
-import welcomeSFCCode from './template/welcome.vue?raw'
 import newSFCCode from './template/new-sfc.vue?raw'
+import welcomeSFCCode from './template/welcome.vue?raw'
 
 export type Editor = editor.IStandaloneCodeEditor | CodeMirror.Editor
 
@@ -92,7 +91,6 @@ export function useStore<E extends Editor = Editor>(
       newSFC: newSFCCode,
     }),
     builtinImportMap = undefined!, // set later
-    editor = shallowRef<E | undefined>(),
 
     errors = ref([]),
     showOutput = ref(false),
@@ -638,7 +636,6 @@ const applyFullState: ReplStore['applyFullState'] = async (fileState, activeFile
     mainFile,
     template,
     builtinImportMap,
-    editor,
 
     errors,
     showOutput,
@@ -746,7 +743,7 @@ export type StoreState<E extends Editor = Editor> = ToRefs<
     dependencyVersion: Record<string, string>
     reloadLanguageTools?: (() => void) | undefined
   }
-> & { editor: ShallowRef<E | undefined> }
+>
 
 export interface ReplStore<E extends Editor = Editor> extends UnwrapRef<StoreState<E>> {
   activeFile: File
@@ -802,7 +799,6 @@ export type Store<E extends Editor = Editor> = Pick<
   | 'renameFile'
   | 'getImportMap'
   | 'getTsConfig'
-  | 'editor'
 >
 
 function addSrcPrefix(file: string) {
