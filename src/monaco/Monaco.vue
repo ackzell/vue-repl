@@ -14,6 +14,7 @@ import { initMonaco } from './env'
 import { getOrCreateModel } from './utils'
 import { type EditorMode, injectKeyProps } from '../types'
 import { registerHighlighter } from './highlight'
+import { useReplEditor } from '../editor-composable'
 
 const props = withDefaults(
   defineProps<{
@@ -41,6 +42,9 @@ const {
   theme: replTheme,
   editorOptions,
 } = inject(injectKeyProps)!
+
+// Initialize the editor composable
+const { setEditor, clearEditor } = useReplEditor()
 
 initMonaco(store.value)
 
@@ -78,6 +82,9 @@ onMounted(() => {
   editor.value = editorInstance
   // Set the editor in the store so it can be accessed by dependent projects
   store.value.editor = editorInstance
+  
+  // ALSO register with the new editor composable for clean access
+  setEditor(editorInstance)
 
   // Support for semantic highlighting
   const t = (editorInstance as any)._themeService._theme
@@ -170,6 +177,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   editor.value?.dispose()
+  // Clean up the editor reference in the composable
+  clearEditor()
 })
 </script>
 

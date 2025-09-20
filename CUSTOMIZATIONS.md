@@ -25,10 +25,55 @@ This document tracks the customizations made to the official @vue/repl for yehye
 ### Added Files
 - **CUSTOMIZATIONS.md**: This documentation file
 - **dist/** files: Built distribution files for package consumption
+- **src/editor-composable.ts**: New composable for clean editor access patterns
+
+### Editor Access Patterns
+- **Legacy pattern**: Access via `store.editor` (maintained for backward compatibility)
+- **New composable pattern**: Use `useReplEditor()` for cleaner separation of concerns
+  - `getEditor()`: Get current editor instance
+  - `setEditor(editor)`: Register editor instance
+  - `clearEditor()`: Clear editor reference
+  - `hasEditor()`: Check if editor is available
+  - `withEditor(callback)`: Execute callback with editor if available
+  - `editorRef`: Reactive readonly reference for watchers
 
 ### Dependencies
 - **Vue Language Tools**: Using alpha versions (3.0.7-alpha.1) vs stable (3.0.7)
 - **Monaco Editor**: Exact version pinning for stability
+
+## API Migration Guide
+
+### Editor Access Migration
+
+For clean separation of concerns, prefer the new composable pattern over direct store access:
+
+```typescript
+// ❌ Legacy (still supported)
+import { store } from '@calmecac-vue/repl'
+const editor = store.editor
+
+// ✅ New recommended pattern
+import { useReplEditor } from '@calmecac-vue/repl'
+const { getEditor, withEditor, hasEditor } = useReplEditor()
+
+// Safe editor access with type checking
+withEditor((editor) => {
+  editor.getModel()?.setValue('new content')
+})
+
+// Check availability
+if (hasEditor()) {
+  const editor = getEditor()
+  // Use editor safely
+}
+```
+
+### Benefits of New Pattern
+- **Separation of concerns**: Editor logic separate from store
+- **Type safety**: Better TypeScript integration  
+- **Reactive**: Built on Vue's composition API
+- **Cleaner**: No direct store dependencies
+- **Future-proof**: Enables advanced features like theme switching
 
 ## Conflict Resolution Guide
 
