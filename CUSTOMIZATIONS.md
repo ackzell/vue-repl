@@ -37,6 +37,17 @@ This document tracks the customizations made to the official @vue/repl for yehye
   - `withEditor(callback)`: Execute callback with editor if available
   - `editorRef`: Reactive readonly reference for watchers
 
+#### ⚠️ **INCOMPLETE**: CodeMirror Integration
+**Status**: The `useReplEditor()` composable currently only supports Monaco editor. 
+
+**TODO before upstream contribution**:
+1. **Extend editor types**: Update composable to handle `Editor` union type (Monaco | CodeMirror)
+2. **CodeMirror component integration**: Add `setEditor()`/`clearEditor()` calls to `src/codemirror/CodeMirror.vue`
+3. **Type safety**: Ensure composable methods work with both editor types
+4. **Testing**: Verify real-time sync works with both Monaco and CodeMirror modes
+
+**Current limitation**: Real-time collaboration and theme switching only work in Monaco mode.
+
 ### Dependencies
 - **Vue Language Tools**: Using alpha versions (3.0.7-alpha.1) vs stable (3.0.7)
 - **Monaco Editor**: Exact version pinning for stability
@@ -84,15 +95,22 @@ When merging upstream updates:
    - Enhanced File class with version tracking
    - New export types (Editor, BatchUpdateOperation)
    - Generic type parameters in store interfaces
+   - New editor composable exports
 
 2. **Review carefully**:
    - Dependencies - keep our alpha versions if needed
    - Store.ts - preserve our state management enhancements
    - New methods and properties in File class
+   - Editor composable integration points
 
 3. **Safe to merge**:
    - Bug fixes in compilation logic
    - New Vue features and improvements
+
+4. **Before contributing upstream**:
+   - Complete CodeMirror integration in editor composable
+   - Test both Monaco and CodeMirror modes thoroughly
+   - Update type definitions to handle Editor union type
    - Performance optimizations
 
 ## Last Upstream Sync
