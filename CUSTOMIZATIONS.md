@@ -1,0 +1,57 @@
+# Vue REPL Customizations
+
+This document tracks the customizations made to the official @vue/repl for yehyecoa-vue integration.
+
+## Key Customizations
+
+### package.json
+- **Name**: Changed from `@vue/repl` to `@calmecac-vue/repl`
+- **Dependencies**: Updated to specific alpha versions for vue language tools
+- **Monaco**: Pinned `monaco-editor-core` to exact version `0.52.2`
+
+### src/store.ts (Major Enhancements)
+- **Enhanced File class**: Added version tracking, lastModified timestamps, editorViewState
+- **New exports**:
+  - `Editor` type (union of Monaco and CodeMirror editors)
+  - Enhanced `File` class with state management
+  - `BatchUpdateOperation` type for bulk file operations
+  - Generic type support for `ReplStore<E extends Editor>`
+- **Store state exposure**: Better external control and state management patterns
+- **Editor integration**: Improved Monaco/CodeMirror editor state handling
+
+### src/monaco-editor.ts
+- **New file**: Added dedicated Monaco editor export for external consumption
+
+### Added Files
+- **CUSTOMIZATIONS.md**: This documentation file
+- **dist/** files: Built distribution files for package consumption
+
+### Dependencies
+- **Vue Language Tools**: Using alpha versions (3.0.7-alpha.1) vs stable (3.0.7)
+- **Monaco Editor**: Exact version pinning for stability
+
+## Conflict Resolution Guide
+
+When merging upstream updates:
+
+1. **Always preserve**:
+   - Package name `@calmecac-vue/repl`
+   - Enhanced File class with version tracking
+   - New export types (Editor, BatchUpdateOperation)
+   - Generic type parameters in store interfaces
+
+2. **Review carefully**:
+   - Dependencies - keep our alpha versions if needed
+   - Store.ts - preserve our state management enhancements
+   - New methods and properties in File class
+
+3. **Safe to merge**:
+   - Bug fixes in compilation logic
+   - New Vue features and improvements
+   - Performance optimizations
+
+## Last Upstream Sync
+- Date: 2025-09-20
+- Upstream version: 4.7.0
+- Our base: forked from expose-editor branch
+- Total diff: ~586 lines of changes in store.ts alone
